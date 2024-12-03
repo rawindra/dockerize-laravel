@@ -1,37 +1,44 @@
-version: '3.9'
+version: '3.8'
+
 services:
   app:
     build:
       context: .
       dockerfile: .docker/Dockerfile
-    image: 'app'
-    ports:
-      - 8080:80
+    container_name: laravel_app
     volumes:
       - ./:/var/www/html
-
-  db:
-    image: mysql:latest
-    restart: always
     ports:
-      - "3306:3306"
-    environment:
-      MYSQL_DATABASE: app_db
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    volumes:
-      - ./db:/var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
+      - "8000:80"
     depends_on:
       - db
-    restart: always
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel_user
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root_secret
+    volumes:
+      - db_data:/var/lib/mysql
     ports:
-      - "8090:80"
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
     environment:
       PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: root
+      PMA_USER: laravel_user
+      PMA_PASSWORD: secret
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
