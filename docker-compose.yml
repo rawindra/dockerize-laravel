@@ -7,7 +7,8 @@ services:
       dockerfile: .docker/Dockerfile
     container_name: laravel_app
     volumes:
-      - ./:/var/www/html
+      - .:/var/www/html
+      - node_modules:/var/www/html/node_modules
     ports:
       - "8000:80"
     depends_on:
@@ -42,3 +43,4 @@ services:
 
 volumes:
   db_data:
+  node_modules:

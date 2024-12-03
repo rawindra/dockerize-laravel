@@ -40,6 +40,13 @@ RUN chown -R www-data:www-data /var/www/html/storage \
 RUN a2enmod rewrite && \
     sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs
+
+# Install Node.js dependencies and compile assets
+RUN npm install && npm run build
+
 # Expose port 80 for incoming HTTP traffic
 EXPOSE 80
 
